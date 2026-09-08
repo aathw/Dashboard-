@@ -1,725 +1,203 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>日系生活情報儀表板 - Cringleford</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f7f4ed;
-            --card-bg: #ffffff;
-            --text-main: #33312e;
-            --text-muted: #8c827a;
-            --border-color: #e8e2d8;
-            --bus-navy: #1b3152;
-            --bus-accent: #f08300;
-            --highlight-red: #d94b38;
-            --stationery-sage: #5b8266;
-            --paper-texture: radial-gradient(#dfd7cc 1px, transparent 1px);
-        }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
 
-        body {
-            background-color: var(--bg-color);
-            background-image: var(--paper-texture);
-            background-size: 20px 20px;
-            color: var(--text-main);
-            font-family: 'Zen Maru Gothic', 'M PLUS Rounded 1c', -apple-system, sans-serif;
-            height: 100vh;
-            display: flex;
-            padding: 22px;
-            gap: 22px;
-            overflow: hidden;
-            -webkit-user-select: none;
-        }
+<meta name="viewport" content="width=1024">
 
-        /* 日式溫潤卡片 */
-        .jp-card {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 26px;
-            box-shadow: 0 10px 24px rgba(70, 60, 50, 0.05), 0 2px 6px rgba(70, 60, 50, 0.03);
-            position: relative;
-        }
+<title>Home Dashboard</title>
 
-        /* 和紙膠帶裝飾 */
-        .washi-tape {
-            position: absolute;
-            top: -11px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90px;
-            height: 20px;
-            background: rgba(220, 205, 185, 0.7);
-            border-left: 2px dashed rgba(255,255,255,0.7);
-            border-right: 2px dashed rgba(255,255,255,0.7);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-            z-index: 10;
-        }
+<style>
 
-        /* 左欄：時鐘與天氣 */
-        .left-col {
-            flex: 0.95;
-            display: flex;
-            flex-direction: column;
-            gap: 22px;
-        }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .clock-card {
-            padding: 24px 20px 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .clock-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--stationery-sage);
-            background: #edf5f0;
-            padding: 4px 12px;
-            border-radius: 20px;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        .time {
-            font-size: 4.3rem;
-            font-weight: 900;
-            line-height: 1;
-            color: var(--text-main);
-            letter-spacing: 1px;
-            font-variant-numeric: tabular-nums;
-        }
-        .seconds {
-            font-size: 1.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            margin-left: 2px;
-        }
-        .date {
-            font-size: 1.05rem;
-            color: #716962;
-            margin-top: 8px;
-            font-weight: 700;
-        }
+body {
 
-        /* 升級版動態日系天氣卡片 */
-        .weather-card {
-            flex: 1;
-            padding: 20px 22px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 8px;
-            border-bottom: 2px dashed var(--border-color);
-        }
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 800;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .location-tag {
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: #8c827a;
-            background: #f4eee5;
-            padding: 3px 10px;
-            border-radius: 12px;
-        }
+  font-family: -apple-system, sans-serif;
 
-        .weather-main {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            padding: 4px 0;
-        }
+  background: linear-gradient(135deg, #667eea, #764ba2);
 
-        /* 動態 SVG 樣式 */
-        .weather-illust-container {
-            width: 105px;
-            height: 105px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        .weather-svg {
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
+  color: white;
 
-        /* 太陽微旋轉動畫 */
-        .sun-spin {
-            transform-origin: 65px 35px;
-            animation: rotateSun 16s linear infinite;
-        }
-        @keyframes rotateSun {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+  height: 100vh;
 
-        /* 雲朵浮動動畫 (手繪輕柔感) */
-        .cloud-float {
-            animation: floatCloud 4.5s ease-in-out infinite;
-        }
-        @keyframes floatCloud {
-            0%, 100% { transform: translateY(0px) translateX(0px); }
-            50% { transform: translateY(-5px) translateX(3px); }
-        }
+  padding: 20px;
 
-        /* 雨滴落下動畫 */
-        .raindrop {
-            animation: rainFall 1.2s cubic-bezier(0.47, 0, 0.745, 0.715) infinite;
-        }
-        .drop-2 { animation-delay: 0.4s; }
-        .drop-3 { animation-delay: 0.8s; }
-        @keyframes rainFall {
-            0% { transform: translateY(-8px); opacity: 0; }
-            40% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(14px); opacity: 0; }
-        }
+  display: flex;
 
-        .temp-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .current-temp {
-            font-size: 3.4rem;
-            font-weight: 900;
-            color: var(--text-main);
-            line-height: 1;
-        }
-        .weather-desc {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--stationery-sage);
-            margin-top: 4px;
-        }
+  flex-direction: column;
 
-        .weather-metrics {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .metric-pill {
-            background: #f9f7f2;
-            border: 1px solid var(--border-color);
-            padding: 8px 10px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: #615a53;
-        }
+}
 
-        /* 右欄：日系巴士動態看板 */
-        .right-col {
-            flex: 1.45;
-            display: flex;
-            flex-direction: column;
-        }
+.header { text-align: center; margin-bottom: 20px; }
 
-        .bus-card {
-            flex: 1;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+.time { font-size: 64px; font-weight: 300; }
 
-        .bus-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 14px;
-            margin-bottom: 16px;
-            border-bottom: 2px dashed var(--border-color);
-        }
-        .station-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .station-badge {
-            background: var(--bus-navy);
-            color: #ffffff;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-        .station-title {
-            font-size: 1.25rem;
-            font-weight: 900;
-            color: var(--bus-navy);
-        }
-        .station-sub {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-        .live-chip {
-            background: #e9f6ed;
-            color: #278648;
-            border: 1.5px solid #bce2c7;
-            font-size: 0.78rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #278648;
-            border-radius: 50%;
-            display: inline-block;
-            animation: blink 1.6s infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.2; }
-        }
+.date { font-size: 20px; opacity: 0.9; margin-top: 8px; }
 
-        .bus-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
+.content { display: flex; flex: 1; gap: 15px; margin-bottom: 20px; }
 
-        .bus-item {
-            background: #ffffff;
-            border: 1.5px solid var(--border-color);
-            border-radius: 18px;
-            padding: 13px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 3px 8px rgba(70, 60, 50, 0.03);
-            transition: all 0.2s ease;
-        }
+.weather, .bus {
 
-        .bus-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+  flex: 1;
 
-        .route-pill {
-            background: var(--bus-navy);
-            color: #ffffff;
-            font-weight: 900;
-            font-size: 1.35rem;
-            min-width: 58px;
-            height: 42px;
-            border-radius: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(27, 49, 82, 0.18);
-        }
-        .route-pill.accent-orange {
-            background: var(--bus-accent);
-            box-shadow: 0 4px 10px rgba(240, 131, 0, 0.25);
-        }
-        .route-pill.accent-sage {
-            background: var(--stationery-sage);
-            box-shadow: 0 4px 10px rgba(91, 130, 102, 0.25);
-        }
+  background: rgba(255,255,255,0.15);
 
-        .bus-dest-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .bus-destination {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-        .bus-via {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            margin-top: 2px;
-        }
+  border-radius: 16px;
 
-        .bus-eta-group {
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
-        }
-        .bus-eta-num {
-            font-size: 1.8rem;
-            font-weight: 900;
-            color: var(--bus-navy);
-            font-variant-numeric: tabular-nums;
-        }
-        .bus-eta-unit {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-muted);
-        }
+  padding: 20px;
 
-        .bus-item.is-due {
-            border-color: #ffd8d3;
-            background: #fffcfb;
-        }
-        .due-badge {
-            background: var(--highlight-red);
-            color: #ffffff;
-            font-size: 0.85rem;
-            font-weight: 800;
-            padding: 5px 12px;
-            border-radius: 12px;
-            letter-spacing: 0.5px;
-            box-shadow: 0 3px 8px rgba(217, 75, 56, 0.25);
-            animation: duePulse 2s infinite ease-in-out;
-        }
-        @keyframes duePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.04); }
-        }
+}
 
-        .footer-status {
-            margin-top: auto;
-            padding-top: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.78rem;
-            color: #9c9186;
-            font-weight: 600;
-            border-top: 1px dashed var(--border-color);
-        }
-    </style>
+.weather h2, .bus h2 { font-size: 20px; margin-bottom: 15px; }
+
+.weather-data { font-size: 42px; font-weight: 700; margin-bottom: 8px; }
+
+.weather-detail { font-size: 15px; opacity: 0.8; }
+
+.bus-item {
+
+  background: rgba(255,255,255,0.18);
+
+  padding: 16px;
+
+  border-radius: 12px;
+
+  margin-bottom: 12px;
+
+  border-left: 4px solid #ffd700;
+
+}
+
+.bus-route { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+
+.bus-time { font-size: 26px; color: #ffd700; font-weight: 700; }
+
+.footer { display: flex; gap: 12px; justify-content: center; }
+
+.home-btn {
+
+  background: white;
+
+  color: #667eea;
+
+  border: none;
+
+  padding: 16px 26px;
+
+  border-radius: 12px;
+
+  font-size: 17px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+.home-btn.active { background: #4ade80; color: white; }
+
+</style>
+
 </head>
+
 <body>
 
-    <!-- 左欄：時鐘與動態天氣 -->
-    <div class="left-col">
-        <div class="jp-card clock-card">
-            <div class="washi-tape"></div>
-            <div class="clock-badge">
-                <span>✦</span>
-                <span>TODAY'S TIME</span>
-            </div>
-            <div class="time">
-                <span id="time-hm">12:30</span><span class="seconds" id="time-s">:00</span>
-            </div>
-            <div class="date" id="full-date">
-                <span>📅 載入中...</span>
-            </div>
-        </div>
+<div class="header">
 
-        <!-- 圖像化動態天氣卡片 -->
-        <div class="jp-card weather-card">
-            <div class="section-header">
-                <div class="section-title">
-                    <span>⛅ 今日天候</span>
-                </div>
-                <div class="location-tag">Cringleford</div>
-            </div>
+  <div class="time" id="time">14:30</div>
 
-            <div class="weather-main">
-                <div class="weather-illust-container" id="weather-icon-box">
-                    <!-- 動態 SVG：太陽旋轉 + 雲朵飄浮 + 雨滴動畫 -->
-                    <svg class="weather-svg" viewBox="0 0 110 110">
-                        <defs>
-                            <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#FFB347"/>
-                                <stop offset="100%" stop-color="#FF851B"/>
-                            </linearGradient>
-                            <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stop-color="#FFFFFF"/>
-                                <stop offset="100%" stop-color="#E4EDF2"/>
-                            </linearGradient>
-                            <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#f08300" flood-opacity="0.2"/>
-                            </filter>
-                        </defs>
+  <div class="date" id="date">星期二，9 月 8 日</div>
 
-                        <!-- 太陽光芒 (帶有旋轉動畫) -->
-                        <g class="sun-spin">
-                            <circle cx="65" cy="38" r="23" fill="url(#sunGrad)" filter="url(#softGlow)"/>
-                            <g stroke="#FFA940" stroke-width="4.5" stroke-linecap="round" opacity="0.85">
-                                <line x1="65" y1="7" x2="65" y2="2" />
-                                <line x1="87" y1="16" x2="91" y2="12" />
-                                <line x1="96" y1="38" x2="101" y2="38" />
-                                <line x1="87" y1="60" x2="91" y2="64" />
-                                <line x1="65" y1="69" x2="65" y2="74" />
-                                <line x1="43" y1="60" x2="39" y2="64" />
-                                <line x1="34" y1="38" x2="29" y2="38" />
-                                <line x1="43" y1="16" x2="39" y2="12" />
-                            </g>
-                        </g>
+</div>
 
-                        <!-- 雨滴群 (預設隱藏，雨天自動由 JS 顯示) -->
-                        <g id="rain-group" opacity="0">
-                            <line class="raindrop" x1="32" y1="78" x2="27" y2="88" stroke="#5b92e5" stroke-width="3.5" stroke-linecap="round"/>
-                            <line class="raindrop drop-2" x1="50" y1="80" x2="45" y2="90" stroke="#5b92e5" stroke-width="3.5" stroke-linecap="round"/>
-                            <line class="raindrop drop-3" x1="68" y1="78" x2="63" y2="88" stroke="#5b92e5" stroke-width="3.5" stroke-linecap="round"/>
-                        </g>
+<div class="content">
 
-                        <!-- 蓬鬆雲朵 (帶有輕柔上下與側向飄動) -->
-                        <g class="cloud-float">
-                            <!-- 底層陰影雲 -->
-                            <path d="M26,72 a17,17 0 0,1 13,-29 a23,23 0 0,1 38,-2 a19,19 0 0,1 17,19 a17,17 0 0,1 -9,15 z" fill="#D7E3EB" opacity="0.6"/>
-                            <!-- 主層手繪雲 -->
-                            <path d="M22,74 a17,17 0 0,1 13,-29 a23,23 0 0,1 38,-2 a19,19 0 0,1 17,19 a17,17 0 0,1 -9,15 z" fill="url(#cloudGrad)"/>
-                        </g>
-                    </svg>
-                </div>
+  <div class="weather">
 
-                <div class="temp-group">
-                    <div class="current-temp" id="weather-temp">18°</div>
-                    <div class="weather-desc" id="weather-desc">晴れ時々曇り</div>
-                </div>
-            </div>
+    <h2>🌤️ 天氣</h2>
 
-            <div class="weather-metrics">
-                <div class="metric-pill">
-                    <span>💧</span>
-                    <span>降水機率 <strong id="pop-val">10%</strong></span>
-                </div>
-                <div class="metric-pill">
-                    <span>🍃</span>
-                    <span>微風 <strong id="wind-val">12 km/h</strong></span>
-                </div>
-            </div>
-        </div>
+    <div class="weather-data" id="temp">--°C</div>
+
+    <div class="weather-detail" id="condition">載入中...</div>
+
+    <div class="weather-detail" id="weather-extra"></div>
+
+  </div>
+
+  <div class="bus">
+
+    <h2>🚌 巴士到站</h2>
+
+    <div class="bus-item">
+
+      <div class="bus-route" id="bus1-route">25 號 往市中心</div>
+
+      <div class="bus-time" id="bus1-time">載入中...</div>
+
     </div>
 
-    <!-- 右欄：巴士到站動態看板 -->
-    <div class="right-col">
-        <div class="jp-card bus-card">
-            <div class="washi-tape"></div>
+    <div class="bus-item">
 
-            <div class="bus-header">
-                <div class="station-info">
-                    <div class="station-badge">🚏</div>
-                    <div>
-                        <div class="station-title">Cringleford Heights (opp) 停留所</div>
-                        <div class="station-sub">Colney Lane, Cringleford</div>
-                    </div>
-                </div>
-                <div class="live-chip">
-                    <span class="live-dot"></span>
-                    <span>LIVE 實時運行</span>
-                </div>
-            </div>
+      <div class="bus-route" id="bus2-route">26 號 往火車站</div>
 
-            <div class="bus-list" id="bus-list">
-                <div class="bus-item is-due">
-                    <div class="bus-left">
-                        <div class="route-pill accent-orange">11A</div>
-                        <div class="bus-dest-group">
-                            <div class="bus-destination">Norwich Castle Meadow</div>
-                            <div class="bus-via">経由：Eaton & St Stephens</div>
-                        </div>
-                    </div>
-                    <div class="due-badge">まもなく (即將抵達)</div>
-                </div>
-                <div class="bus-item">
-                    <div class="bus-left">
-                        <div class="route-pill">3</div>
-                        <div class="bus-dest-group">
-                            <div class="bus-destination">Watton via Hingham</div>
-                            <div class="bus-via">経由：N&N Hospital</div>
-                        </div>
-                    </div>
-                    <div class="bus-eta-group">
-                        <span class="bus-eta-num">6</span>
-                        <span class="bus-eta-unit">分後</span>
-                    </div>
-                </div>
-                <div class="bus-item">
-                    <div class="bus-left">
-                        <div class="route-pill accent-sage">12</div>
-                        <div class="bus-dest-group">
-                            <div class="bus-destination">Wroxham via City Centre</div>
-                            <div class="bus-via">経由：Rail Station</div>
-                        </div>
-                    </div>
-                    <div class="bus-eta-group">
-                        <span class="bus-eta-num">14</span>
-                        <span class="bus-eta-unit">分後</span>
-                    </div>
-                </div>
-            </div>
+      <div class="bus-time" id="bus2-time">載入中...</div>
 
-            <div class="footer-status">
-                <span id="last-updated">最終更新: 載入中...</span>
-                <span>今日も良い一日を・Have a wonderful day ✨</span>
-            </div>
-        </div>
     </div>
 
-    <script>
-        // 1. 時鐘
-        function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('time-hm').innerText = `${h}:${m}`;
-            document.getElementById('time-s').innerText = `:${s}`;
+  </div>
 
-            const weekdays = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
-            const y = now.getFullYear();
-            const mo = now.getMonth() + 1;
-            const d = now.getDate();
-            const w = weekdays[now.getDay()];
+</div>
 
-            document.getElementById('full-date').innerText = `📅 ${y}年${mo}月${d}日 (${w})`;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+<div class="footer">
 
-        // 2. 氣象 API 與動態天氣狀態切換
-        async function fetchWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.610&longitude=1.238&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability&timezone=auto');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.current) {
-                        const temp = Math.round(data.current.temperature_2m);
-                        const code = data.current.weather_code;
-                        document.getElementById('weather-temp').innerText = `${temp}°`;
-                        document.getElementById('wind-val').innerText = `${Math.round(data.current.wind_speed_10m)} km/h`;
+  <button class="home-btn" id="btn-light1" onclick="toggleLight('light1')">💡 客廳</button>
 
-                        // 判斷天氣狀態並觸發雨滴動態
-                        const rainGroup = document.getElementById('rain-group');
-                        const descEl = document.getElementById('weather-desc');
+  <button class="home-btn" id="btn-light2" onclick="toggleLight('light2')">💡 睡房</button>
 
-                        if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
-                            descEl.innerText = "雨・Rainy";
-                            rainGroup.setAttribute('opacity', '1');
-                        } else if ([1, 2, 3].includes(code)) {
-                            descEl.innerText = "晴れ時々曇り";
-                            rainGroup.setAttribute('opacity', '0');
-                        } else if (code === 0) {
-                            descEl.innerText = "快晴・Sunny";
-                            rainGroup.setAttribute('opacity', '0');
-                        } else {
-                            descEl.innerText = "曇り・Cloudy";
-                            rainGroup.setAttribute('opacity', '0');
-                        }
-                    }
-                    if (data.hourly && data.hourly.precipitation_probability) {
-                        const curH = new Date().getHours();
-                        const pop = data.hourly.precipitation_probability[curH] || 0;
-                        document.getElementById('pop-val').innerText = `${pop}%`;
-                    }
-                }
-            } catch (e) {
-                console.log("氣象更新稍後重試");
-            }
-        }
-        fetchWeather();
-        setInterval(fetchWeather, 600000); // 10 分鐘自動更新天氣
+  <button class="home-btn" onclick="toggleAC()">❄️ 冷氣</button>
 
-        // 3. 巴士即時資料抓取
-        async function fetchBusDepartures() {
-            const stopId = '2900C3510';
-            const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://bustimes.org/stops/' + stopId);
+  <button class="home-btn" onclick="location.reload()">🔄 重新整理</button>
 
-            try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('網絡問題');
-                const data = await response.json();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.contents, 'text/html');
+</div>
 
-                const rows = doc.querySelectorAll('table tbody tr, ul.list-group li');
-                const departures = [];
+<script>
 
-                rows.forEach(r => {
-                    const service = r.querySelector('.bold, strong, a.service, td:first-child')?.innerText?.trim();
-                    const dest = r.querySelector('td:nth-child(2), .destination')?.innerText?.trim();
-                    const time = r.querySelector('td:last-child, .time')?.innerText?.trim();
+// 時間
 
-                    if (service && time) {
-                        departures.push({ service, dest: dest || 'Norwich 方向', time });
-                    }
-                });
+function updateTime() {
 
-                if (departures.length > 0) {
-                    renderBusList(departures.slice(0, 5));
-                }
-            } catch (err) {
-                console.log("使用快取資料");
-            } finally {
-                const now = new Date();
-                const tStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-                document.getElementById('last-updated').innerText = `最終更新: ${tStr}`;
-            }
-        }
+  const now = new Date();
 
-        function renderBusList(list) {
-            const container = document.getElementById('bus-list');
-            container.innerHTML = '';
-            const colors = ['accent-orange', '', 'accent-sage', '', ''];
+  document.getElementById('time').textContent = 
 
-            list.forEach((item, index) => {
-                const isDue = item.time.toLowerCase().includes('due') || item.time.includes('0 min');
-                const colorClass = colors[index % colors.length];
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
 
-                const row = document.createElement('div');
-                row.className = `bus-item ${isDue ? 'is-due' : ''}`;
+  const weekdays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
 
-                row.innerHTML = `
-                    <div class="bus-left">
-                        <div class="route-pill ${colorClass}">${item.service}</div>
-                        <div class="bus-dest-group">
-                            <div class="bus-destination">${item.dest}</div>
-                            <div class="bus-via">経由：Colney Lane</div>
-                        </div>
-                    </div>
-                    ${isDue ? 
-                        `<div class="due-badge">まもなく (即將抵達)</div>` : 
-                        `<div class="bus-eta-group">
-                            <span class="bus-eta-num">${item.time.replace(/[^0-9]/g, '') || item.time}</span>
-                            <span class="bus-eta-unit">${item.time.includes(':') ? '' : '分後'}</span>
-                        </div>`
-                    }
-                `;
-                container.appendChild(row);
-            });
-        }
+  document.getElementById('date').textContent = weekdays[now.getDay()] + '，9 月 8 日';
 
-        fetchBusDepartures();
-        setInterval(fetchBusDepartures, 30000);
-    </script>
-</body>
-</html>
+}
+
+setInterval(updateTime, 1000);
+
+updateTime();
+
+
+
+// 天氣
+
+async function fetchWeather() {
+
+  try {
+
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.6309&longitude=1.2974&current_weather=true&timezone=auto');
+
+    const data = await res.json();
+
+    document.getElementById('temp').textContent = Math.round(data.current_weather.temperature) + '°C';
+
+    const codes = {0:'☀️ 晴朗',1:'🌤️ 大部分晴朗',2:'⛅ 部分多雲',3:'☁️ 多雲',61:'🌧️ 細雨',63:'🌧️ 大雨',95:'⛈️ 雷暴'};
