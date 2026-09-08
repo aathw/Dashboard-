@@ -1,1 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>日系生活情報儀表板 - Cringleford</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f7f4ed;
+            --card-bg: #ffffff;
+            --text-main: #33312e;
+            --text-muted: #8c827a;
+            --border-color: #e8e2d8;
+            --bus-navy: #1b3152;
+            --bus-accent: #f08300;
+            --highlight-red: #d94b38;
+            --stationery-sage: #5b8266;
+            --paper-texture: radial-gradient(#dfd7cc 1px, transparent 1px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: var(--paper-texture);
+            background-size: 20px 20px;
+            color: var(--text-main);
+            font-family: 'Zen Maru Gothic', 'M PLUS Rounded 1c', -apple-system, sans-serif;
+            height: 100vh;
+            display: flex;
+            padding: 22px;
+            gap: 22px;
+            overflow: hidden;
+            -webkit-user-select: none;
+        }
+
+        /* 日式溫潤卡片 */
+        .jp-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 26px;
+            box-shadow: 0 10px 24px rgba(70, 60, 50, 0.05), 0 2px 6px rgba(70, 60, 50, 0.03);
+            position: relative;
+        }
+
+        /* 和紙膠帶裝飾 */
+        .washi-tape {
+            position: absolute;
+            top: -11px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 20px;
+            background: rgba(220, 205, 185, 0.7);
+            border-left: 2px dashed rgba(255,255,255,0.7);
+            border-right: 2px dashed rgba(255,255,255,0.7);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            z-index: 10;
+        }
+
+        /* 左欄：時鐘與天氣 */
+        .left-col {
+            flex: 0.95;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .clock-card {
+            padding: 26px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .clock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--stationery-sage);
+            background: #edf5f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        .time {
+            font-size: 4.4rem;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--text-main);
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+        }
+        .seconds {
+            font-size: 1.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 2px;
+        }
+        .date {
+            font-size: 1.1rem;
+            color: #716962;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .weather-card {
+            flex: 1;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed var(--border-color);
+        }
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .location-tag {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #8c827a;
+            background: #f4eee5;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .weather-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 6px 0;
+        }
+        .weather-illust {
+            width: 86px;
+            height: 86px;
+            filter: drop-shadow(0 6px 12px rgba(240, 131, 0, 0.18));
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .temp-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .current-temp {
+            font-size: 3.2rem;
+            font-weight: 900;
+            color: var(--text-main);
+            line-height: 1;
+        }
+        .weather-desc {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--stationery-sage);
+            margin-top: 4px;
+        }
+
+        .weather-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .metric-pill {
+            background: #f9f7f2;
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #615a53;
+        }
+
+        /* 右欄：原生日系巴士動態看板 (不再用整頁 iframe) */
+        .right-col {
+            flex: 1.45;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bus-card {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .bus-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+            border-bottom: 2px dashed var(--border-color);
+        }
+        .station-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .station-badge {
+            background: var(--bus-navy);
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .station-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: var(--bus-navy);
+        }
+        .station-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .live-chip {
+            background: #e9f6ed;
+            color: #278648;
+            border: 1.5px solid #bce2c7;
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #278648;
+            border-radius: 50%;
+            display: inline-block;
+            animation: blink 1.6s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        /* 巴士列表 (日系手作風格卡片) */
+        .bus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .bus-item {
+            background: #ffffff;
+            border: 1.5px solid var(--border-color);
+            border-radius: 18px;
+            padding: 13px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 3px 8px rgba(70, 60, 50, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .bus-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* 圓潤日系膠囊路線號碼牌 */
+        .route-pill {
+            background: var(--bus-navy);
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 1.35rem;
+            min-width: 58px;
+            height: 42px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(27, 49, 82, 0.18);
+        }
+        .route-pill.accent-orange {
+            background: var(--bus-accent);
+            box-shadow: 0 4px 10px rgba(240, 131, 0, 0.25);
+        }
+        .route-pill.accent-sage {
+            background: var(--stationery-sage);
+            box-shadow: 0 4px 10px rgba(91, 130, 102, 0.25);
+        }
+
+        .bus-dest-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .bus-destination {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .bus-via {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .bus-eta-group {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .bus-eta-num {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--bus-navy);
+            font-variant-numeric: tabular-nums;
+        }
+        .bus-eta-unit {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* 即將到站 (まもなく) 狀態 */
+        .bus-item.is-due {
+            border-color: #ffd8d3;
+            background: #fffcfb;
+        }
+        .due-badge {
+            background: var(--highlight-red);
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 12px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 3px 8px rgba(217, 75, 56, 0.25);
+            animation: duePulse 2s infinite ease-in-out;
+        }
+        @keyframes duePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+
+        .footer-status {
+            margin-top: auto;
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: #9c9186;
+            font-weight: 600;
+            border-top: 1px dashed var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 左欄：手作感時鐘與圖像化天氣 -->
+    <div class="left-col">
+        <!-- 時鐘 -->
+        <div class="jp-card clock-card">
+            <div class="washi-tape"></div>
+            <div class="clock-badge">
+                <span>✦</span>
+                <span>TODAY'S TIME</span>
+            </div>
+            <div class="time">
+                <span id="time-hm">12:30</span><span class="seconds" id="time-s">:00</span>
+            </div>
+            <div class="date" id="full-date">
+                <span>📅 載入中...</span>
+            </div>
+        </div>
+
+        <!-- 圖像化日系天氣 (Cringleford 座標) -->
+        <div class="jp-card weather-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>⛅ 今日天候</span>
+                </div>
+                <div class="location-tag">Cringleford</div>
+            </div>
+
+            <div class="weather-main">
+                <svg class="weather-illust" viewBox="0 0 100 100">
+                    <circle cx="65" cy="35" r="22" fill="#FFA940"/>
+                    <g stroke="#FFA940" stroke-width="4" stroke-linecap="round" opacity="0.8">
+                        <line x1="65" y1="6" x2="65" y2="1" />
+                        <line x1="86" y1="14" x2="90" y2="10" />
+                        <line x1="94" y1="35" x2="99" y2="35" />
+                        <line x1="86" y1="56" x2="90" y2="60" />
+                    </g>
+                    <path d="M26,68 a16,16 0 0,1 12,-28 a22,22 0 0,1 36,-2 a18,18 0 0,1 16,18 a16,16 0 0,1 -8,14 z" fill="#E8F1F5"/>
+                    <path d="M22,72 a16,16 0 0,1 12,-28 a22,22 0 0,1 36,-2 a18,18 0 0,1 16,18 a16,16 0 0,1 -8,14 z" fill="#FFFFFF"/>
+                </svg>
+
+                <div class="temp-group">
+                    <div class="current-temp" id="weather-temp">18°</div>
+                    <div class="weather-desc" id="weather-desc">晴れ時々曇り</div>
+                </div>
+            </div>
+
+            <div class="weather-metrics">
+                <div class="metric-pill">
+                    <span>💧</span>
+                    <span>降水機率 <strong id="pop-val">10%</strong></span>
+                </div>
+                <div class="metric-pill">
+                    <span>🍃</span>
+                    <span>微風 <strong id="wind-val">12 km/h</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右欄：日系 Cringleford Heights (opp) 動態電子牌 -->
+    <div class="right-col">
+        <div class="jp-card bus-card">
+            <div class="washi-tape"></div>
+
+            <div class="bus-header">
+                <div class="station-info">
+                    <div class="station-badge">🚏</div>
+                    <div>
+                        <div class="station-title">Cringleford Heights (opp) 停留所</div>
+                        <div class="station-sub">Colney Lane, Cringleford</div>
+                    </div>
+                </div>
+                <div class="live-chip">
+                    <span class="live-dot"></span>
+                    <span>LIVE 實時運行</span>
+                </div>
+            </div>
+
+            <!-- 原生美化巴士動態列表（即時更新容器） -->
+            <div class="bus-list" id="bus-list">
+                <!-- 動態資料會由 JavaScript 自動填入，下方為預設載入範例 -->
+                <div class="bus-item is-due">
+                    <div class="bus-left">
+                        <div class="route-pill accent-orange">11A</div>
+                        <div class="bus-dest-group">
+                            <div class="bus-destination">Norwich Castle Meadow</div>
+                            <div class="bus-via">経由：Eaton & St Stephens</div>
+                        </div>
+                    </div>
+                    <div class="due-badge">まもなく (即將抵達)</div>
+                </div>
+
+                <div class="bus-item">
+                    <div class="bus-left">
+                        <div class="route-pill">3</div>
+                        <div class="bus-dest-group">
+                            <div class="bus-destination">Watton via Hingham</div>
+                            <div class="bus-via">経由：N&N Hospital</div>
+                        </div>
+                    </div>
+                    <div class="bus-eta-group">
+                        <span class="bus-eta-num">6</span>
+                        <span class="bus-eta-unit">分後</span>
+                    </div>
+                </div>
+
+                <div class="bus-item">
+                    <div class="bus-left">
+                        <div class="route-pill accent-sage">12</div>
+                        <div class="bus-dest-group">
+                            <div class="bus-destination">Wroxham via City Centre</div>
+                            <div class="bus-via">経由：Rail Station</div>
+                        </div>
+                    </div>
+                    <div class="bus-eta-group">
+                        <span class="bus-eta-num">14</span>
+                        <span class="bus-eta-unit">分後</span>
+                    </div>
+                </div>
+
+                <div class="bus-item">
+                    <div class="bus-left">
+                        <div class="route-pill">3B</div>
+                        <div class="bus-dest-group">
+                            <div class="bus-destination">Shipdham</div>
+                            <div class="bus-via">経由：Barford</div>
+                        </div>
+                    </div>
+                    <div class="bus-eta-group">
+                        <span class="bus-eta-num">23</span>
+                        <span class="bus-eta-unit">分後</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-status">
+                <span id="last-updated">最終更新: 載入中...</span>
+                <span>今日も良い一日を・Have a wonderful day ✨</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. 時鐘
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('time-hm').innerText = `${h}:${m}`;
+            document.getElementById('time-s').innerText = `:${s}`;
+
+            const weekdays = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
+            const y = now.getFullYear();
+            const mo = now.getMonth() + 1;
+            const d = now.getDate();
+            const w = weekdays[now.getDay()];
+
+            document.getElementById('full-date').innerText = `📅 ${y}年${mo}月${d}日 (${w})`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 2. 氣象 (Cringleford 座標)
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.610&longitude=1.238&current=temperature_2m,weather_code,wind_speed_10m&hourly=precipitation_probability&timezone=auto');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.current) {
+                        const temp = Math.round(data.current.temperature_2m);
+                        document.getElementById('weather-temp').innerText = `${temp}°`;
+                        document.getElementById('wind-val').innerText = `${Math.round(data.current.wind_speed_10m)} km/h`;
+                    }
+                    if (data.hourly && data.hourly.precipitation_probability) {
+                        const curH = new Date().getHours();
+                        const pop = data.hourly.precipitation_probability[curH] || 0;
+                        document.getElementById('pop-val').innerText = `${pop}%`;
+                    }
+                }
+            } catch (e) {
+                console.log("氣象更新稍後重試");
+            }
+        }
+        fetchWeather();
+        setInterval(fetchWeather, 600000);
+
+        // 3. 自動抓取 Cringleford Heights (opp) 巴士即時資料並以日系原生 UI 呈現
+        async function fetchBusDepartures() {
+            const stopId = '2900C3510'; // Cringleford Heights (opp)
+            const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://bustimes.org/stops/' + stopId);
+
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error('網絡問題');
+                const data = await response.json();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.contents, 'text/html');
+
+                // 抓取 bustimes.org 上的到站表格行
+                const rows = doc.querySelectorAll('table tbody tr, ul.list-group li');
+                const departures = [];
+
+                rows.forEach(r => {
+                    const service = r.querySelector('.bold, strong, a.service, td:first-child')?.innerText?.trim();
+                    const dest = r.querySelector('td:nth-child(2), .destination')?.innerText?.trim();
+                    const time = r.querySelector('td:last-child, .time')?.innerText?.trim();
+
+                    if (service && time) {
+                        departures.push({ service, dest: dest || 'Norwich 方向', time });
+                    }
+                });
+
+                if (departures.length > 0) {
+                    renderBusList(departures.slice(0, 5));
+                }
+            } catch (err) {
+                console.log("暫時使用快取資料");
+            } finally {
+                const now = new Date();
+                const tStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+                document.getElementById('last-updated').innerText = `最終更新: ${tStr}`;
+            }
+        }
+
+        function renderBusList(list) {
+            const container = document.getElementById('bus-list');
+            container.innerHTML = '';
+
+            const colors = ['accent-orange', '', 'accent-sage', '', ''];
+
+            list.forEach((item, index) => {
+                const isDue = item.time.toLowerCase().includes('due') || item.time.includes('0 min');
+                const colorClass = colors[index % colors.length];
+
+                const row = document.createElement('div');
+                row.className = `bus-item ${isDue ? 'is-due' : ''}`;
+
+                row.innerHTML = `
+                    <div class="bus-left">
+                        <div class="route-pill ${colorClass}">${item.service}</div>
+                        <div class="bus-dest-group">
+                            <div class="bus-destination">${item.dest}</div>
+                            <div class="bus-via">経由：Colney Lane</div>
+                        </div>
+                    </div>
+                    ${isDue ? 
+                        `<div class="due-badge">まもなく (即將抵達)</div>` : 
+                        `<div class="bus-eta-group">
+                            <span class="bus-eta-num">${item.time.replace(/[^0-9]/g, '') || item.time}</span>
+                            <span class="bus-eta-unit">${item.time.includes(':') ? '' : '分後'}</span>
+                        </div>`
+                    }
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        fetchBusDepartures();
+        setInterval(fetchBusDepartures, 30000); // 每 30 秒自動更新
+    </script>
+</body>
+</html>
+
 
